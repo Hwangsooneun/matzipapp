@@ -2,6 +2,8 @@ import React, {useRef} from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import useAuth from '@/hooks/queries/useAuth';
 import {colors} from '@/constants';
@@ -24,7 +26,8 @@ function MapHomeScreen() {
   const navigation = useNavigation<Navigation>();
   const mapRef = useRef<MapView | null>(null);
   const {userLocation, isUserLocationError} = useUserLocation();
-  usePermission();
+  usePermission('LOCATION');
+
   const handleLogout = () => {
     logoutMutation.mutate(null);
   };
@@ -55,11 +58,11 @@ function MapHomeScreen() {
       <Pressable
         style={[styles.drawerButton, {top: insert.top || 20}]}
         onPress={() => navigation.openDrawer()}>
-        <Text>서랍</Text>
+        <Ionicons name="menu" size={25} color={colors.WHITE} />
       </Pressable>
       <View style={styles.buttonList}>
         <Pressable style={styles.mapButton} onPress={handlePressUserLocation}>
-          <Text>내위치</Text>
+          <MaterialIcons name="my-location" size={25} color={colors.WHITE} />
         </Pressable>
       </View>
     </>
