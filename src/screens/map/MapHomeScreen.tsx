@@ -1,5 +1,5 @@
 import React, {useRef, useState} from 'react';
-import {Pressable, StyleSheet, View} from 'react-native';
+import {Alert, Pressable, StyleSheet, View} from 'react-native';
 import MapView, {
   Callout,
   LatLng,
@@ -10,13 +10,12 @@ import MapView, {
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-
-import useAuth from '@/hooks/queries/useAuth';
-import {colors} from '@/constants';
 import {CompositeNavigationProp, useNavigation} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {MapStackParamList} from '@/navigations/stack/MapStackNavigator';
 import {DrawerNavigationProp} from '@react-navigation/drawer';
+import {StackNavigationProp} from '@react-navigation/stack';
+
+import {alerts, colors, mapNavigations} from '@/constants';
+import {MapStackParamList} from '@/navigations/stack/MapStackNavigator';
 import {MainDrawerParamList} from '@/navigations/drawer/MainDrawerNavigator';
 import useUserLocation from '@/hooks/useUserLocation';
 import usePermission from '@/hooks/usePermission';
@@ -30,19 +29,28 @@ type Navigation = CompositeNavigationProp<
 
 function MapHomeScreen() {
   const insert = useSafeAreaInsets();
-  const {logoutMutation} = useAuth();
   const navigation = useNavigation<Navigation>();
   const mapRef = useRef<MapView | null>(null);
   const {userLocation, isUserLocationError} = useUserLocation();
-  const [selectLocation, setSelectLocation] = useState<LatLng>();
+  const [selectLocation, setSelectLocation] = useState<LatLng | null>();
   usePermission('LOCATION');
-
-  const handleLogout = () => {
-    logoutMutation.mutate(null);
-  };
 
   const handleLongPressMapView = ({nativeEvent}: LongPressEvent) => {
     setSelectLocation(nativeEvent.coordinate);
+  };
+
+  const handlePressAddPost = () => {
+    if (!selectLocation) {
+      return Alert.alert(
+        alerts.NOT_SELECT_LOCATION.TITLE,
+        alerts.NOT_SELECT_LOCATION.DESCRIPTION,
+      );
+    }
+
+    navigation.navigate(mapNavigations.ADD_POST, {
+      location: selectLocation,
+    });
+    setSelectLocation(null);
   };
 
   const handlePressUserLocation = () => {
@@ -56,7 +64,6 @@ function MapHomeScreen() {
       longitudeDelta: 0.0421,
     });
   };
-  /** 나의 위치를 구하고 지도를 그곳으로 이동 */
 
   return (
     <>
@@ -96,6 +103,9 @@ function MapHomeScreen() {
         <Ionicons name="menu" size={25} color={colors.WHITE} />
       </Pressable>
       <View style={styles.buttonList}>
+        <Pressable style={styles.mapButton} onPress={handlePressAddPost}>
+          <MaterialIcons name="add" size={25} color={colors.WHITE} />
+        </Pressable>
         <Pressable style={styles.mapButton} onPress={handlePressUserLocation}>
           <MaterialIcons name="my-location" size={25} color={colors.WHITE} />
         </Pressable>
