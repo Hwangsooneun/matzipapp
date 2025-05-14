@@ -2,11 +2,12 @@ import {colors} from '@/constants';
 import {MarkerColor} from '@/types/domain';
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
-import {LatLng, MapMarkerProps, Marker} from 'react-native-maps';
+import {LatLng, Marker, MyMapMarkerProps} from 'react-native-maps';
 
-interface CustomMarkerProps extends MapMarkerProps {
-  coordinate: LatLng;
+interface CustomMarkerProps extends MyMapMarkerProps {
+  coordinate?: LatLng;
   color: MarkerColor;
+  score?: number;
 }
 
 const colorHex = {
@@ -23,18 +24,23 @@ const CustomMarker = ({
   score = 5,
   ...props
 }: CustomMarkerProps) => {
-  return (
-    <Marker coordinate={coordinate} {...props}>
-      <View style={styles.container}>
-        <View style={[styles.marker, {backgroundColor: colorHex[color]}]}>
-          <View style={[styles.eye, styles.leftEye]} />
-          <View style={[styles.eye, styles.rightEye]} />
-          {score > 3 && <View style={[styles.mouth, styles.good]} />}
-          {score === 3 && <View style={styles.soso} />}
-          {score < 3 && <View style={[styles.mouth, styles.bad]} />}
-        </View>
+  const markerView = (
+    <View style={styles.container}>
+      <View style={[styles.marker, {backgroundColor: colorHex[color]}]}>
+        <View style={[styles.eye, styles.leftEye]} />
+        <View style={[styles.eye, styles.rightEye]} />
+        {score > 3 && <View style={[styles.mouth, styles.good]} />}
+        {score === 3 && <View style={styles.soso} />}
+        {score < 3 && <View style={[styles.mouth, styles.bad]} />}
       </View>
+    </View>
+  );
+  return coordinate ? (
+    <Marker coordinate={coordinate} {...props}>
+      {markerView}
     </Marker>
+  ) : (
+    markerView
   );
 };
 

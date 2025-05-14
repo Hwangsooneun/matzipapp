@@ -16,12 +16,9 @@ type UseMutationCustomOptions<TData = unknown, TVariables = unknown> = Omit<
   'mutationFn'
 >;
 
-type UserQUeryCustomOptions<
-  TQueryFnData = unknown,
-  TData = TQueryFnData,
-> = Omit<
+type UseQueryCustomOptions<TQueryFnData = unknown, TData = TQueryFnData> = Omit<
   UseQueryOptions<TQueryFnData, ResponseError, TData, QueryKey>,
   'queryKey'
 >;
 
-export type {ResponseError, UseMutationCustomOptions, UserQUeryCustomOptions};
+export type {ResponseError, UseMutationCustomOptions, UseQueryCustomOptions};
