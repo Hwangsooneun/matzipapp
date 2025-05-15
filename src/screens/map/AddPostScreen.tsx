@@ -1,6 +1,14 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {StackScreenProps} from '@react-navigation/stack';
-import {SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
+import {
+  Image,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  View,
+  ViewBase,
+} from 'react-native';
 
 import {colors, mapNavigations} from '@/constants';
 import {MapStackParamList} from '@/navigations/stack/MapStackNavigator';
@@ -18,6 +26,10 @@ import MarkerSelector from '@/components/MarkerSelector';
 import ScoreInput from '@/components/ScoreInput';
 import DatePickerOption from '@/components/DatePickerOption';
 import useModal from '@/hooks/useModal';
+import ImageInput from '@/components/ImageInput';
+import usePermission from '@/hooks/usePermission';
+import useImagePicker from '@/hooks/useImagePicker';
+import PreviewImageList from '@/components/PreviewImageList';
 
 type AddPostScreenProps = StackScreenProps<
   MapStackParamList,
@@ -38,6 +50,10 @@ function AddPostScreen({route, navigation}: AddPostScreenProps) {
   const [date, setDate] = useState<Date>(new Date());
   const [isPicked, setIsPicked] = useState<boolean>(false);
   const dateOption = useModal();
+  const imagePicker = useImagePicker({
+    initialImages: [],
+  });
+  usePermission('PHOTO');
 
   const handleConfirmDate = () => {
     setIsPicked(true);
@@ -118,6 +134,10 @@ function AddPostScreen({route, navigation}: AddPostScreenProps) {
             onPressMarker={handleSelectMarker}
           />
           <ScoreInput score={score} onChangeScore={handleChangeScore} />
+          <View style={styles.imagesViewer}>
+            <ImageInput onChange={imagePicker.handleChange} />
+            <PreviewImageList imageUris={imagePicker.imageUris} />
+          </View>
           <DatePickerOption
             date={date}
             isVisible={dateOption.isVisible}
@@ -142,6 +162,9 @@ const styles = StyleSheet.create({
   inputContainer: {
     gap: 20,
     marginBottom: 20,
+  },
+  imagesViewer: {
+    flexDirection: 'row',
   },
 });
 
